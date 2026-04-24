@@ -115,12 +115,12 @@ jobs:
               }
             }
 
-            // Inject apps data into main index.html
             const appsJson = JSON.stringify(appsData);
-            indexHtml = indexHtml.replace('/* APPS_JSON */', appsJson);
+            indexHtml = indexHtml.replace(
+              /\/\/ APPS_DATA_START\n\s*const apps = \[.*?\];\n\s*\/\/ APPS_DATA_END/s,
+              `// APPS_DATA_START\n    const apps = ${appsJson};\n    // APPS_DATA_END`
+            );
             fs.writeFileSync('index.html', indexHtml);
-
-            console.log(`\nOK: Done! Built pages for ${appsData.length} apps.`);
 
       - name: Commit and push changes
         run: |
