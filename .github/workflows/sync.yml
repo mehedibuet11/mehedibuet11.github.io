@@ -28,7 +28,7 @@ jobs:
       - name: Fetch and build privacy pages
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PRIVACY_SYNC_TOKEN }}
           script: |
             const fs = require('fs');
             const path = require('path');
