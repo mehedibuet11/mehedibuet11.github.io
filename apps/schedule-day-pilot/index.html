@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Schedule Day Pilot — Privacy Policy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --border: #1e1e2e;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --text: #e8e8f0;
+      --muted: #6e6e8a;
+      --card-bg: #0f0f18;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 50% 40% at 15% 15%, rgba(108,99,255,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 50% at 85% 85%, rgba(0,212,170,0.07) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* NAV */
+    nav {
+      padding: 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+      padding: 8px 0;
+    }
+    .back-btn:hover { color: var(--accent); }
+    .back-btn svg { width: 16px; height: 16px; }
+
+    /* HEADER */
+    header {
+      padding: 40px 0 48px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+
+    .app-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,212,170,0.1);
+      border: 1px solid rgba(0,212,170,0.25);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 20px;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* CONTENT */
+    .policy-content {
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .policy-content h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin: 40px 0 16px;
+      color: var(--text);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .policy-content h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      margin: 28px 0 12px;
+      color: var(--accent2);
+    }
+
+    .policy-content p {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #b8b8cc;
+      margin-bottom: 16px;
+    }
+
+    .policy-content ul, .policy-content ol {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+
+    .policy-content li {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #b8b8cc;
+      margin-bottom: 6px;
+    }
+
+    .policy-content a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .policy-content a:hover { text-decoration: underline; }
+
+    .policy-content strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .policy-content code {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 13px;
+      color: var(--accent2);
+    }
+
+    .policy-content blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 12px 20px;
+      background: rgba(108,99,255,0.06);
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+      font-style: italic;
+      color: var(--muted);
+    }
+
+    /* CONTACT BOX */
+    .contact-box {
+      margin-top: 64px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .contact-box h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .contact-box p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--accent), #8b7fff);
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .contact-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(108,99,255,0.35);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      margin-top: 64px;
+      padding: 32px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <a href="../../" class="back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        All Apps
+      </a>
+    </nav>
+
+    <header>
+      <div class="app-tag">Privacy Policy</div>
+      <h1>Schedule Day Pilot</h1>
+      <div class="meta">
+        <span class="meta-item">📅 Last updated: April 24, 2026</span>
+        <span class="meta-item">👤 mehedibuet11</span>
+      </div>
+    </header>
+
+    <div class="policy-content" id="content">
+      <h1 dir="auto">Privacy Policy</h1>
+<h2 dir="auto">Introduction</h2>
+<p dir="auto">This privacy policy applies to the <strong>Schedule Day Pilot</strong> app developed by <strong>mehedibuet11</strong>.</p>
+<h2 dir="auto">Information We Collect</h2>
+<p dir="auto">We do not collect any personal information from users.</p>
+<h2 dir="auto">Third-Party Services</h2>
+<p dir="auto">This app may use Google Play Services.</p>
+<h2 dir="auto">Contact</h2>
+<p dir="auto">For questions, contact us via <a href="https://github.com/mehedibuet11">GitHub</a>.</p>
+    </div>
+
+    <div class="contact-box">
+      <h3>Questions or Concerns?</h3>
+      <p>If you have any questions about this privacy policy, feel free to reach out.</p>
+      <a href="https://github.com/mehedibuet11" class="contact-link">
+        Contact via GitHub
+      </a>
+    </div>
+
+    <footer>
+      <a href="../../">← Back to all apps</a> ·
+      <a href="https://github.com/mehedibuet11" target="_blank">mehedibuet11</a>
+    </footer>
+  </div>
+</body>
+</html>
