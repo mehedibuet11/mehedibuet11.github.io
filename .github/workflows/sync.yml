@@ -26,7 +26,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install @github/github-script marked
+        run: npm install --no-save --no-package-lock marked
 
       - name: Fetch and build privacy pages
         uses: actions/github-script@v7
@@ -35,18 +35,11 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            const { marked } = require('marked');
+            const { marked } = await import('marked');
 
-            // -------------------------------------------------------
-            // LIST YOUR APP REPOS HERE
-            // Add each app's repo name (under mehedibuet11)
-            // -------------------------------------------------------
             const APP_REPOS = [
-              // Example:
-              // { repo: 'my-awesome-app', name: 'My Awesome App' },
-              // { repo: 'weather-app', name: 'Weather App' },
+               { repo: 'Schedule-Day-Pilot', name: 'Schedule Day Pilot' },
             ];
-            // -------------------------------------------------------
 
             // Read the app page template
             const template = fs.readFileSync('app-template/index.html', 'utf8');
@@ -112,9 +105,9 @@ jobs:
                   updated: lastUpdate,
                 });
 
-                console.log(`✅ Built page for ${app.name}`);
+                console.log(`OK: Built page for ${app.name}`);
               } catch (err) {
-                console.log(`⚠️ Skipped ${app.repo}: ${err.message}`);
+                console.log(`WARN: Skipped ${app.repo}: ${err.message}`);
               }
             }
 
@@ -123,12 +116,15 @@ jobs:
             indexHtml = indexHtml.replace('/* APPS_JSON */', appsJson);
             fs.writeFileSync('index.html', indexHtml);
 
-            console.log(`\n✅ Done! Built pages for ${appsData.length} apps.`);
+            console.log(`\nOK: Done! Built pages for ${appsData.length} apps.`);
+
+      - name: Cleanup node_modules
+        run: rm -rf node_modules package-lock.json
 
       - name: Commit and push changes
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add -A
-          git diff --staged --quiet || git commit -m "🔄 Auto-sync privacy policies [$(date +'%Y-%m-%d')]"
+          git diff --staged --quiet || git commit -m "Auto-sync privacy policies [$(date +'%Y-%m-%d')]"
           git push
