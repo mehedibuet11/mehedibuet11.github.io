@@ -2,8 +2,8 @@ name: Notify Privacy Site
 
 on:
   push:
-    paths:
-      - 'privacy.md'
+    branches:
+      - main       
 
 jobs:
   notify:
