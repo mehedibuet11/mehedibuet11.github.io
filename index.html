@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Privacy Policy — mehedibuet11</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --border: #1e1e2e;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --text: #e8e8f0;
+      --muted: #6e6e8a;
+      --card-bg: #0f0f18;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(108,99,255,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 80% 80%, rgba(0,212,170,0.08) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.4;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* HEADER */
+    header {
+      padding: 60px 0 40px;
+      text-align: center;
+      position: relative;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(108,99,255,0.12);
+      border: 1px solid rgba(108,99,255,0.3);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 32px;
+      font-weight: 500;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--accent2);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto 48px;
+      line-height: 1.7;
+    }
+
+    /* DIVIDER */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 48px 0;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider span {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+    }
+
+    /* APP GRID */
+    .apps-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    #app-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 80px;
+    }
+
+    .app-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .app-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(108,99,255,0.06), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .app-card:hover {
+      border-color: rgba(108,99,255,0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(108,99,255,0.15);
+    }
+
+    .app-card:hover::before { opacity: 1; }
+
+    .app-icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .app-info { flex: 1; min-width: 0; }
+
+    .app-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .app-meta {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .app-arrow {
+      color: var(--muted);
+      font-size: 18px;
+      transition: color 0.2s, transform 0.2s;
+    }
+    .app-card:hover .app-arrow {
+      color: var(--accent);
+      transform: translateX(3px);
+    }
+
+    /* EMPTY STATE */
+    .empty {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--muted);
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+    .empty h3 { font-family: 'Syne', sans-serif; margin-bottom: 8px; color: var(--text); }
+    .empty p { font-size: 14px; line-height: 1.6; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <div class="container">
+    <header>
+      <div class="badge">Privacy Policies</div>
+      <h1>Apps by<br/><span>mehedibuet11</span></h1>
+      <p class="subtitle">All privacy policies for published Android apps. Select an app to view its full privacy policy.</p>
+    </header>
+
+    <p class="apps-label">All Apps</p>
+    <div id="app-list">
+      <div class="empty">
+        <div class="empty-icon">📱</div>
+        <h3>No apps yet</h3>
+        <p>Push a <code>privacy.md</code> file to any of your app repos.<br/>It will automatically appear here.</p>
+      </div>
+    </div>
+
+    <footer>
+      Built by <a href="https://github.com/mehedibuet11" target="_blank">mehedibuet11</a> ·
+      Hosted on <a href="https://pages.github.com" target="_blank">GitHub Pages</a>
+    </footer>
+  </div>
+
+  <script>
+    // Apps are injected here by GitHub Actions
+    const apps = [/* APPS_JSON */];
+
+    const emojis = ['📱','🚀','⚡','🎯','🔥','💡','🛡️','🎨','🔮','🌟'];
+    const list = document.getElementById('app-list');
+
+    if (apps.length > 0) {
+      list.innerHTML = '';
+      apps.forEach((app, i) => {
+        const emoji = emojis[i % emojis.length];
+        const card = document.createElement('a');
+        card.className = 'app-card';
+        card.href = `./apps/${app.slug}/`;
+        card.style.animationDelay = `${i * 0.08}s`;
+        card.innerHTML = `
+          <div class="app-icon">${emoji}</div>
+          <div class="app-info">
+            <div class="app-name">${app.name}</div>
+            <div class="app-meta">Updated ${app.updated}</div>
+          </div>
+          <div class="app-arrow">›</div>
+        `;
+        list.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+name: Sync Privacy Policies
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+  # Run every day at midnight (to catch any missed pushes)
+  schedule:
+    - cron: '0 0 * * *'
+  # Also trigger via repository_dispatch (called from app repos)
+  repository_dispatch:
+    types: [privacy-updated]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout privacy site repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install @github/github-script marked
+
+      - name: Fetch and build privacy pages
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const { marked } = require('marked');
+
+            // -------------------------------------------------------
+            // LIST YOUR APP REPOS HERE
+            // Add each app's repo name (under mehedibuet11)
+            // -------------------------------------------------------
+            const APP_REPOS = [
+              // Example:
+              // { repo: 'my-awesome-app', name: 'My Awesome App' },
+              // { repo: 'weather-app', name: 'Weather App' },
+            ];
+            // -------------------------------------------------------
+
+            // Read the app page template
+            const template = fs.readFileSync('app-template/index.html', 'utf8');
+
+            // Read main index.html
+            let indexHtml = fs.readFileSync('index.html', 'utf8');
+
+            const appsData = [];
+
+            // Clean old app pages
+            const appsDir = path.join(process.cwd(), 'apps');
+            if (fs.existsSync(appsDir)) {
+              fs.rmSync(appsDir, { recursive: true });
+            }
+            fs.mkdirSync(appsDir);
+
+            for (const app of APP_REPOS) {
+              try {
+                console.log(`Fetching privacy.md from ${app.repo}...`);
+
+                // Fetch privacy.md from the app repo
+                const response = await github.rest.repos.getContent({
+                  owner: 'mehedibuet11',
+                  repo: app.repo,
+                  path: 'privacy.md',
+                });
+
+                const content = Buffer.from(response.data.content, 'base64').toString('utf8');
+                const htmlContent = marked.parse(content);
+
+                // Get last commit date for this file
+                const commits = await github.rest.repos.listCommits({
+                  owner: 'mehedibuet11',
+                  repo: app.repo,
+                  path: 'privacy.md',
+                  per_page: 1,
+                });
+
+                const lastUpdate = commits.data.length > 0
+                  ? new Date(commits.data[0].commit.committer.date).toLocaleDateString('en-US', {
+                      year: 'numeric', month: 'long', day: 'numeric'
+                    })
+                  : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+                // Create app slug from repo name
+                const slug = app.repo.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+                // Build app page from template
+                let appPage = template
+                  .replace(/{{APP_NAME}}/g, app.name)
+                  .replace(/{{UPDATED_DATE}}/g, lastUpdate)
+                  .replace('{{POLICY_CONTENT}}', htmlContent);
+
+                // Write app page
+                const appDir = path.join(appsDir, slug);
+                fs.mkdirSync(appDir, { recursive: true });
+                fs.writeFileSync(path.join(appDir, 'index.html'), appPage);
+
+                appsData.push({
+                  name: app.name,
+                  slug: slug,
+                  repo: app.repo,
+                  updated: lastUpdate,
+                });
+
+                console.log(`✅ Built page for ${app.name}`);
+              } catch (err) {
+                console.log(`⚠️ Skipped ${app.repo}: ${err.message}`);
+              }
+            }
+
+            // Inject apps data into main index.html
+            const appsJson = JSON.stringify(appsData);
+            indexHtml = indexHtml.replace('/* APPS_JSON */', appsJson);
+            fs.writeFileSync('index.html', indexHtml);
+
+            console.log(`\n✅ Done! Built pages for ${appsData.length} apps.`);
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "🔄 Auto-sync privacy policies [$(date +'%Y-%m-%d')]"
+          git push
