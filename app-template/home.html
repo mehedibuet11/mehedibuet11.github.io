@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{{APP_NAME}} — Privacy Policy</title>
+  <title>{{APP_NAME}} — App Homepage</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --bg: #0a0a0f;
       --surface: #12121a;
@@ -18,7 +17,6 @@
       --muted: #6e6e8a;
       --card-bg: #0f0f18;
     }
-
     body {
       background: var(--bg);
       color: var(--text);
@@ -27,7 +25,6 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-
     body::before {
       content: '';
       position: fixed;
@@ -38,7 +35,6 @@
       pointer-events: none;
       z-index: 0;
     }
-
     .container {
       max-width: 760px;
       margin: 0 auto;
@@ -47,14 +43,12 @@
       z-index: 2;
     }
 
-    /* NAV */
     nav {
       padding: 24px 0;
       display: flex;
       flex-direction: column;
       gap: 14px;
     }
-
     .top-row {
       display: flex;
       align-items: center;
@@ -62,7 +56,6 @@
       gap: 12px;
       flex-wrap: wrap;
     }
-
     .back-btn {
       display: inline-flex;
       align-items: center;
@@ -94,7 +87,6 @@
     .tab:hover { border-color: rgba(108,99,255,0.5); color: var(--text); transform: translateY(-1px); }
     .tab.active { border-color: rgba(0,212,170,0.5); color: var(--accent2); }
 
-    /* HEADER */
     header {
       padding: 40px 0 48px;
       border-bottom: 1px solid var(--border);
@@ -105,14 +97,14 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(0,212,170,0.1);
-      border: 1px solid rgba(0,212,170,0.25);
+      background: rgba(108,99,255,0.12);
+      border: 1px solid rgba(108,99,255,0.3);
       border-radius: 100px;
       padding: 5px 14px;
       font-size: 11px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--accent2);
+      color: var(--accent);
       font-weight: 500;
       margin-bottom: 24px;
     }
@@ -135,18 +127,10 @@
       margin-top: 20px;
     }
 
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .meta-item { display: flex; align-items: center; gap: 6px; }
 
-    /* CONTENT */
-    .policy-content {
-      animation: fadeUp 0.4s ease both;
-    }
-
-    .policy-content h2 {
+    .content { animation: fadeUp 0.4s ease both; }
+    .content h2 {
       font-family: 'Syne', sans-serif;
       font-size: 20px;
       font-weight: 700;
@@ -155,46 +139,25 @@
       padding-bottom: 10px;
       border-bottom: 1px solid var(--border);
     }
-
-    .policy-content h3 {
+    .content h3 {
       font-family: 'Syne', sans-serif;
       font-size: 16px;
       font-weight: 600;
       margin: 28px 0 12px;
       color: var(--accent2);
     }
-
-    .policy-content p {
+    .content p {
       font-size: 15px;
       line-height: 1.8;
       color: #b8b8cc;
       margin-bottom: 16px;
     }
-
-    .policy-content ul, .policy-content ol {
-      padding-left: 20px;
-      margin-bottom: 16px;
-    }
-
-    .policy-content li {
-      font-size: 15px;
-      line-height: 1.8;
-      color: #b8b8cc;
-      margin-bottom: 6px;
-    }
-
-    .policy-content a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-    .policy-content a:hover { text-decoration: underline; }
-
-    .policy-content strong {
-      color: var(--text);
-      font-weight: 500;
-    }
-
-    .policy-content code {
+    .content ul, .content ol { padding-left: 20px; margin-bottom: 16px; }
+    .content li { font-size: 15px; line-height: 1.8; color: #b8b8cc; margin-bottom: 6px; }
+    .content a { color: var(--accent); text-decoration: none; }
+    .content a:hover { text-decoration: underline; }
+    .content strong { color: var(--text); font-weight: 500; }
+    .content code {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 4px;
@@ -202,8 +165,7 @@
       font-size: 13px;
       color: var(--accent2);
     }
-
-    .policy-content blockquote {
+    .content blockquote {
       border-left: 3px solid var(--accent);
       padding: 12px 20px;
       background: rgba(108,99,255,0.06);
@@ -213,7 +175,6 @@
       color: var(--muted);
     }
 
-    /* CONTACT BOX */
     .contact-box {
       margin-top: 64px;
       background: var(--card-bg);
@@ -222,20 +183,13 @@
       padding: 32px;
       text-align: center;
     }
-
     .contact-box h3 {
       font-family: 'Syne', sans-serif;
       font-size: 18px;
       font-weight: 700;
       margin-bottom: 8px;
     }
-
-    .contact-box p {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-
+    .contact-box p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
     .contact-link {
       display: inline-flex;
       align-items: center;
@@ -249,10 +203,7 @@
       font-weight: 500;
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    .contact-link:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(108,99,255,0.35);
-    }
+    .contact-link:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(108,99,255,0.35); }
 
     footer {
       border-top: 1px solid var(--border);
@@ -274,22 +225,22 @@
   <div class="container">
     <nav>
       <div class="top-row">
-        <a href="../../../" class="back-btn">
+        <a href="../../" class="back-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 12H5M12 5l-7 7 7 7"/>
           </svg>
           All Apps
         </a>
         <div class="tabs" aria-label="App pages">
-          <a class="tab" href="../">Homepage</a>
-          <a class="tab active" href="./" aria-current="page">Privacy Policy</a>
-          <a class="tab" href="../terms/">Terms</a>
+          <a class="tab active" href="./" aria-current="page">Homepage</a>
+          <a class="tab" href="./privacy/">Privacy Policy</a>
+          <a class="tab" href="./terms/">Terms</a>
         </div>
       </div>
     </nav>
 
     <header>
-      <div class="app-tag">Privacy Policy</div>
+      <div class="app-tag">App Homepage</div>
       <h1>{{APP_NAME}}</h1>
       <div class="meta">
         <span class="meta-item">📅 Last updated: {{UPDATED_DATE}}</span>
@@ -297,22 +248,21 @@
       </div>
     </header>
 
-    <div class="policy-content" id="content">
-      {{POLICY_CONTENT}}
+    <div class="content" id="content">
+      {{HOME_CONTENT}}
     </div>
 
     <div class="contact-box">
-      <h3>Questions or Concerns?</h3>
-      <p>If you have any questions about this privacy policy, feel free to reach out.</p>
-      <a href="https://github.com/mehedibuet11" class="contact-link">
-        Contact via GitHub
-      </a>
+      <h3>Need help?</h3>
+      <p>Questions about this app, privacy, or terms? Reach out.</p>
+      <a href="https://github.com/mehedibuet11" class="contact-link">Contact via GitHub</a>
     </div>
 
     <footer>
-      <a href="../../../">← Back to all apps</a> ·
-      <a href="https://github.com/mehedibuet11" target="_blank">mehedibuet11</a>
+      <a href="../../">← Back to all apps</a> ·
+      <a href="https://github.com/mehedibuet11" target="_blank" rel="noreferrer">mehedibuet11</a>
     </footer>
   </div>
 </body>
 </html>
+

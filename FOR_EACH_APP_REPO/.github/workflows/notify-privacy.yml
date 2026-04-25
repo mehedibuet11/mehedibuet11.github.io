@@ -3,7 +3,9 @@ name: Notify Privacy Site
 on:
   push:
     branches:
-      - main       
+      - main
+    paths:
+      - 'description.txt'
 
 jobs:
   notify:

@@ -27,6 +27,10 @@ jobs:
 
       - name: Fetch and build privacy pages
         uses: actions/github-script@v7
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: gpt-4o-mini
+          SITE_BASE_URL: https://mehedibuet11.github.io
         with:
           github-token: ${{ secrets.PRIVACY_SYNC_TOKEN }}
           script: |
@@ -34,82 +38,250 @@ jobs:
             const path = require('path');
 
             const APP_REPOS = [
-               { repo: 'Schedule-Day-Pilot', name: 'Schedule Day Pilot' },
+              { repo: 'Schedule-Day-Pilot', name: 'Schedule Day Pilot' },
             ];
 
-            // Read the app page template
-            const template = fs.readFileSync('app-template/index.html', 'utf8');
+            // Read the app page templates
+            const homeTemplate = fs.readFileSync('app-template/home.html', 'utf8');
+            const privacyTemplate = fs.readFileSync('app-template/index.html', 'utf8');
+            const termsTemplate = fs.readFileSync('app-template/terms.html', 'utf8');
 
             // Read main index.html
             let indexHtml = fs.readFileSync('index.html', 'utf8');
 
             const appsData = [];
 
-            // Clean old app pages
             const appsDir = path.join(process.cwd(), 'apps');
-            if (fs.existsSync(appsDir)) {
-              fs.rmSync(appsDir, { recursive: true });
+            const ensureDir = (dirPath) => fs.mkdirSync(dirPath, { recursive: true });
+            ensureDir(appsDir);
+
+            const slugifyRepo = (repo) => repo.toLowerCase().replace(/[^a-z0-9]/g, '-');
+            const formatDate = (isoString) =>
+              new Date(isoString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            const owner = 'mehedibuet11';
+            const siteBaseUrl = process.env.SITE_BASE_URL || `https://${owner}.github.io`;
+            const openaiApiKey = process.env.OPENAI_API_KEY;
+            const openaiModel = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+
+            // Remove old app folders that are no longer in APP_REPOS (keeps the repo tidy)
+            const desiredSlugs = new Set(APP_REPOS.map((a) => slugifyRepo(a.repo)));
+            for (const entry of fs.readdirSync(appsDir, { withFileTypes: true })) {
+              if (!entry.isDirectory()) continue;
+              if (entry.name.startsWith('.')) continue;
+              if (desiredSlugs.has(entry.name)) continue;
+              fs.rmSync(path.join(appsDir, entry.name), { recursive: true, force: true });
             }
-            fs.mkdirSync(appsDir);
+
+            const fetchRepoFile = async (repo, filePath) => {
+              const response = await github.rest.repos.getContent({
+                owner,
+                repo,
+                path: filePath,
+              });
+              return Buffer.from(response.data.content, 'base64').toString('utf8');
+            };
+
+            const renderMarkdown = async (repo, markdownText) => {
+              const rendered = await github.rest.markdown.render({
+                text: markdownText,
+                mode: 'gfm',
+                context: `${owner}/${repo}`,
+              });
+              return rendered.data;
+            };
+
+            const extractResponseText = (responseJson) => {
+              const output = responseJson?.output ?? [];
+              const texts = [];
+              for (const item of output) {
+                const content = item?.content ?? [];
+                for (const c of content) {
+                  if (c?.type === 'output_text' && typeof c?.text === 'string') texts.push(c.text);
+                }
+              }
+              return texts.join('').trim();
+            };
+
+            const readJsonIfExists = (p) => {
+              if (!fs.existsSync(p)) return null;
+              try {
+                return JSON.parse(fs.readFileSync(p, 'utf8'));
+              } catch {
+                return null;
+              }
+            };
+
+            const generateDocsFromDescription = async ({ appName, repo, slug, descriptionText }) => {
+              if (!openaiApiKey) {
+                throw new Error(
+                  'Missing OPENAI_API_KEY. Add it in this repo: Settings -> Secrets and variables -> Actions -> New repository secret.'
+                );
+              }
+
+              const systemPrompt =
+                'You write app documentation for compliance and user clarity. ' +
+                'Return only valid JSON that matches the schema. ' +
+                'Do not invent features or data access that are not mentioned in the provided description. ' +
+                'If a detail is unknown, write a conservative statement and avoid guessing.';
+
+              const userPrompt =
+                `App Name: ${appName}\n` +
+                `Repo: ${repo}\n` +
+                `Slug: ${slug}\n` +
+                `Site Base URL: ${siteBaseUrl}\n\n` +
+                `Generate 3 Markdown documents:\n` +
+                `1) Homepage (describe functionality; explain any Google user data usage; include links)\n` +
+                `2) Privacy Policy (data collected/processed; purposes; retention/deletion; sharing; security; contact)\n` +
+                `3) Terms of Service (acceptance; usage rules; disclaimers; contact)\n\n` +
+                `Links to include:\n` +
+                `- Privacy Policy: ${siteBaseUrl}/apps/${slug}/privacy/\n` +
+                `- Terms of Service: ${siteBaseUrl}/apps/${slug}/terms/\n\n` +
+                `Description (source of truth):\n` +
+                `${descriptionText}\n`;
+
+              const schema = {
+                type: 'object',
+                additionalProperties: false,
+                properties: {
+                  homepage_md: { type: 'string' },
+                  privacy_md: { type: 'string' },
+                  terms_md: { type: 'string' },
+                },
+                required: ['homepage_md', 'privacy_md', 'terms_md'],
+              };
+
+              const body = {
+                model: openaiModel,
+                input: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: userPrompt },
+                ],
+                text: {
+                  format: {
+                    type: 'json_schema',
+                    name: 'app_docs',
+                    strict: true,
+                    schema,
+                  },
+                },
+              };
+
+              const resp = await fetch('https://api.openai.com/v1/responses', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${openaiApiKey}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+              });
+
+              const json = await resp.json();
+              if (!resp.ok) throw new Error(`OpenAI API error (${resp.status}): ${JSON.stringify(json)}`);
+
+              const text = extractResponseText(json);
+              if (!text) throw new Error('OpenAI API returned empty output text.');
+              return JSON.parse(text);
+            };
 
             for (const app of APP_REPOS) {
               try {
-                console.log(`Fetching privacy.md from ${app.repo}...`);
-
-                // Fetch privacy.md from the app repo
-                const response = await github.rest.repos.getContent({
-                  owner: 'mehedibuet11',
-                  repo: app.repo,
-                  path: 'privacy.md',
-                });
-
-                const content = Buffer.from(response.data.content, 'base64').toString('utf8');
-
-                // Render markdown to HTML via GitHub's Markdown API (no external deps needed)
-                const rendered = await github.rest.markdown.render({
-                  text: content,
-                  mode: 'gfm',
-                  context: `mehedibuet11/${app.repo}`,
-                });
-
-                const htmlContent = rendered.data;
-
-                // Get last commit date for this file
-                const commits = await github.rest.repos.listCommits({
-                  owner: 'mehedibuet11',
-                  repo: app.repo,
-                  path: 'privacy.md',
-                  per_page: 1,
-                });
-
-                const lastUpdate = commits.data.length > 0
-                  ? new Date(commits.data[0].commit.committer.date).toLocaleDateString('en-US', {
-                      year: 'numeric', month: 'long', day: 'numeric'
-                    })
-                  : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-                // Create app slug from repo name
-                const slug = app.repo.toLowerCase().replace(/[^a-z0-9]/g, '-');
-
-                // Build app page from template
-                let appPage = template
-                  .replace(/{{APP_NAME}}/g, app.name)
-                  .replace(/{{UPDATED_DATE}}/g, lastUpdate)
-                  .replace('{{POLICY_CONTENT}}', htmlContent);
-
-                // Write app page
+                const slug = slugifyRepo(app.repo);
                 const appDir = path.join(appsDir, slug);
-                fs.mkdirSync(appDir, { recursive: true });
-                fs.writeFileSync(path.join(appDir, 'index.html'), appPage);
+                ensureDir(appDir);
+
+                let descriptionText = null;
+                try {
+                  descriptionText = await fetchRepoFile(app.repo, 'description.txt');
+                } catch (e) {
+                  if (e.status !== 404) throw e;
+                }
+
+                if (!descriptionText) {
+                  throw new Error('Missing description.txt (nothing to generate pages from).');
+                }
+
+                const needUpdate = /need update/i.test(descriptionText);
+
+                const homePath = path.join(appDir, 'index.html');
+                const privacyPath = path.join(appDir, 'privacy', 'index.html');
+                const termsPath = path.join(appDir, 'terms', 'index.html');
+                const hasPages = fs.existsSync(homePath) && fs.existsSync(privacyPath) && fs.existsSync(termsPath);
+
+                const aiDir = path.join(appDir, '_ai');
+                ensureDir(aiDir);
+                const metaPath = path.join(aiDir, 'meta.json');
+                let meta = readJsonIfExists(metaPath) || {};
+
+                const shouldGenerate = needUpdate || !hasPages;
+
+                // "need update" controls regeneration; first build does not require it
+                if (shouldGenerate) {
+                  console.log(`Generating docs for ${app.repo} (${needUpdate ? 'need update' : 'first build'})...`);
+                  const nowIso = new Date().toISOString();
+                  const docs = await generateDocsFromDescription({
+                    appName: app.name,
+                    repo: app.repo,
+                    slug,
+                    descriptionText,
+                  });
+                  const generatedMeta = {
+                    generated_at: nowIso,
+                    updated_label: formatDate(nowIso),
+                  };
+                  fs.writeFileSync(metaPath, JSON.stringify(generatedMeta, null, 2));
+                  meta = generatedMeta;
+
+                  // Render markdown to HTML via GitHub's Markdown API (no external deps needed)
+                  const homeHtml = await renderMarkdown(app.repo, docs.homepage_md);
+                  const privacyHtml = await renderMarkdown(app.repo, docs.privacy_md);
+                  const termsHtml = await renderMarkdown(app.repo, docs.terms_md);
+
+                  // Build app pages from templates
+                  const homePage = homeTemplate
+                    .replace(/{{APP_NAME}}/g, app.name)
+                    .replace(/{{UPDATED_DATE}}/g, formatDate(nowIso))
+                    .replace('{{HOME_CONTENT}}', homeHtml);
+
+                  const privacyPage = privacyTemplate
+                    .replace(/{{APP_NAME}}/g, app.name)
+                    .replace(/{{UPDATED_DATE}}/g, formatDate(nowIso))
+                    .replace('{{POLICY_CONTENT}}', privacyHtml);
+
+                  const termsPage = termsTemplate
+                    .replace(/{{APP_NAME}}/g, app.name)
+                    .replace(/{{UPDATED_DATE}}/g, formatDate(nowIso))
+                    .replace('{{TERMS_CONTENT}}', termsHtml);
+
+                  // Write app pages
+                  fs.writeFileSync(homePath, homePage);
+
+                  const privacyDir = path.join(appDir, 'privacy');
+                  ensureDir(privacyDir);
+                  fs.writeFileSync(privacyPath, privacyPage);
+
+                  const termsDir = path.join(appDir, 'terms');
+                  ensureDir(termsDir);
+                  fs.writeFileSync(termsPath, termsPage);
+                } else {
+                  console.log(`No "need update" found for ${app.repo}; using cached generated docs.`);
+                }
+
+                if (!fs.existsSync(homePath) || !fs.existsSync(privacyPath) || !fs.existsSync(termsPath)) {
+                  throw new Error('Generated pages missing; ensure description.txt exists and OpenAI generation succeeded at least once.');
+                }
+
+                const updatedIso = meta.generated_at ?? new Date(fs.statSync(homePath).mtime).toISOString();
+                const updatedLabel = meta.updated_label ?? formatDate(updatedIso);
 
                 appsData.push({
                   name: app.name,
                   slug: slug,
                   repo: app.repo,
-                  updated: lastUpdate,
+                  updated: updatedLabel,
                 });
 
-                console.log(`OK: Built page for ${app.name}`);
+                console.log(`OK: Built pages for ${app.name}`);
               } catch (err) {
                 console.log(`WARN: Skipped ${app.repo}: ${err.message}`);
               }

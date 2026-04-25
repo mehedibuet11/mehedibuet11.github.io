@@ -1,0 +1,19 @@
+[App Name]
+
+Short description of what the app does.
+
+Features:
+- ...
+
+Data & permissions (be explicit):
+- What data users enter:
+- What data is stored locally:
+- What Google user data is accessed (if any) and why:
+  - Example: Google Drive appDataFolder for backup/restore (only when user enables backup)
+- What third-party services are used (if any):
+
+Contact:
+- Support email:
+
+To force regeneration of the hosted pages later, include the exact words (anywhere in this file), then remove it after the next sync to avoid repeated regeneration costs:
+need update

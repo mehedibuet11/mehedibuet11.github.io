@@ -1,100 +1,57 @@
-# 🔐 mehedibuet11 — Privacy Policy Site
+# mehedibuet11 — App Policy Site
 
-> Central privacy policy hub for all Android apps published on Google Play Store.
+Central hosted pages for each Android app:
+- App homepage
+- Privacy policy
+- Terms of service
 
-**Live URL:** `https://mehedibuet11.github.io`  
-**Per-app URL:** `https://mehedibuet11.github.io/apps/your-app-name/`
+Live URL: `https://mehedibuet11.github.io`
 
----
+Per-app URLs:
+- App homepage: `https://mehedibuet11.github.io/apps/your-app-slug/`
+- Privacy policy: `https://mehedibuet11.github.io/apps/your-app-slug/privacy/`
+- Terms of service: `https://mehedibuet11.github.io/apps/your-app-slug/terms/`
 
-## 📁 Structure
+## Repo structure
 
-```
-mehedibuet11.github.io/          ← This repo (main site)
-├── index.html                   ← Homepage (auto-updated)
-├── app-template/
-│   └── index.html               ← Template for each app's policy page
-├── apps/
-│   ├── my-awesome-app/
-│   │   └── index.html           ← Auto-generated
-│   └── weather-app/
-│       └── index.html           ← Auto-generated
-└── .github/workflows/
-    └── sync.yml                 ← Auto-sync workflow
-```
+- `index.html`: main listing page (auto-updated)
+- `app-template/`: HTML templates for the 3 pages
+- `apps/<slug>/`: generated app pages
+- `.github/workflows/sync.yml`: generator workflow (GitHub Actions)
 
----
+## One-time setup
 
-## 🚀 Setup (One Time)
+1) GitHub Pages
+- Create a repo named exactly `mehedibuet11.github.io`
+- Settings -> Pages -> Source -> set to `main` branch, `/ (root)`
 
-### Step 1: Create the GitHub Pages repo
+2) Personal Access Token (for syncing)
+- Create a classic PAT with `repo` scope
+- Add repo secret in this site repo:
+  - Name: `PRIVACY_SYNC_TOKEN`
+  - Value: your PAT
 
-1. Create a new repo named exactly: `mehedibuet11.github.io`
-2. Upload all files from this folder into that repo
-3. Go to **Settings → Pages → Source** → set to `main` branch, `/ (root)`
-4. Your site will be live at `https://mehedibuet11.github.io`
+3) OpenAI API key (for generation)
+- Add repo secret in this site repo:
+  - Name: `OPENAI_API_KEY`
+  - Value: your OpenAI API key
 
-### Step 2: Create a Personal Access Token
+Cost control rule:
+- First build: generates pages when an app repo has `description.txt`
+- Later builds: regenerates only when `description.txt` contains `need update` (remove it after the next sync)
 
-1. Go to **GitHub → Settings → Developer Settings → Personal Access Tokens → Tokens (classic)**
-2. Click **Generate new token (classic)**
-3. Give it a name: `PRIVACY_SYNC_TOKEN`
-4. Select scope: ✅ `repo`
-5. Copy the token
+## Add a new app
 
-### Step 3: Add token to the main site repo
+1) In this repo: add your app repo in `.github/workflows/sync.yml` under `APP_REPOS`.
 
-1. Go to your `mehedibuet11.github.io` repo
-2. **Settings → Secrets and variables → Actions → New repository secret**
-3. Name: `PRIVACY_SYNC_TOKEN`
-4. Value: paste your token
+2) In your app repo:
+- Add `description.txt` at the repo root (copy from `FOR_EACH_APP_REPO/description.txt`).
+- Add `.github/workflows/notify-privacy.yml` (copy from `FOR_EACH_APP_REPO/.github/workflows/notify-privacy.yml`).
+- Add repo secret:
+  - Name: `PRIVACY_SYNC_TOKEN`
+  - Value: same PAT as the site repo
 
----
+## Manual sync
 
-## ➕ Adding a New App
+If needed: GitHub -> Actions -> Sync Privacy Policies -> Run workflow
 
-### In `sync.yml` — add your app to the list:
-
-```yaml
-const APP_REPOS = [
-  { repo: 'your-app-repo-name', name: 'Your App Display Name' },
-  { repo: 'another-app', name: 'Another App' },
-];
-```
-
-### In your app repo:
-
-**1. Create `privacy.md`** at the root of the repo  
-(Use the template from `FOR_EACH_APP_REPO/privacy.md`)
-
-**2. Create `.github/workflows/notify-privacy.yml`**  
-(Copy from `FOR_EACH_APP_REPO/.github/workflows/notify-privacy.yml`)
-
-**3. Add secret to your app repo:**
-- Go to app repo → **Settings → Secrets → Actions**
-- Add: `PRIVACY_SYNC_TOKEN` = same token as above
-
-### Done! 🎉
-
-Every time you push changes to `privacy.md` in any app repo:
-1. The workflow in that repo sends a signal to the main site
-2. The main site rebuilds automatically
-3. The updated policy appears at `https://mehedibuet11.github.io/apps/your-app-repo-name/`
-
----
-
-## 📱 Play Store
-
-Use this link format in your Play Store listing:
-
-```
-https://mehedibuet11.github.io/apps/your-app-repo-name/
-```
-
----
-
-## 🔄 Manual Sync
-
-If auto-sync doesn't trigger, you can manually run it:
-1. Go to `mehedibuet11.github.io` repo
-2. **Actions → Sync Privacy Policies → Run workflow**
