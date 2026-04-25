@@ -30,7 +30,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: gpt-4o-mini
-          SITE_BASE_URL: https://mehedibuet11.github.io
+          SITE_BASE_URL: ${{ secrets.SITE_BASE_URL }}
         with:
           github-token: ${{ secrets.PRIVACY_SYNC_TOKEN }}
           script: |
@@ -294,12 +294,26 @@ jobs:
             );
             fs.writeFileSync('index.html', indexHtml);
 
-      - name: Commit and push changes
+      - name: Install sshpass (for password-based SSH)
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add -A
-          git diff --staged --quiet && echo "No changes" && exit 0
-          git commit -m "Auto-sync privacy policies [$(date +'%Y-%m-%d')]"
-          git pull --rebase origin main
-          git push
+          sudo apt-get update
+          sudo apt-get install -y sshpass rsync
+
+      - name: Deploy to server (rsync over SSH)
+        env:
+          HOST: ${{ secrets.HOST }}
+          USER: ${{ secrets.USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
+        run: |
+          if [ -z "$HOST" ] || [ -z "$USER" ] || [ -z "$PASSWORD" ] || [ -z "$REMOTE_PATH" ]; then
+            echo "Missing one of required secrets: HOST, USER, PASSWORD, REMOTE_PATH"
+            exit 1
+          fi
+
+          sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USER@$HOST" "mkdir -p '$REMOTE_PATH'"
+
+          sshpass -p "$PASSWORD" rsync -az --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            index.html apps/ \
+            "$USER@$HOST:$REMOTE_PATH/"

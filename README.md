@@ -5,7 +5,7 @@ Central hosted pages for each Android app:
 - Privacy policy
 - Terms of service
 
-Live URL: `https://mehedibuet11.github.io`
+Live URL: set this to your own verified domain (example: `https://apps.yourdomain.com`)
 
 Per-app URLs:
 - App homepage: `https://mehedibuet11.github.io/apps/your-app-slug/`
@@ -21,20 +21,23 @@ Per-app URLs:
 
 ## One-time setup
 
-1) GitHub Pages
-- Create a repo named exactly `mehedibuet11.github.io`
-- Settings -> Pages -> Source -> set to `main` branch, `/ (root)`
-
-2) Personal Access Token (for syncing)
+1) Personal Access Token (for syncing GitHub repos)
 - Create a classic PAT with `repo` scope
 - Add repo secret in this site repo:
   - Name: `PRIVACY_SYNC_TOKEN`
   - Value: your PAT
 
-3) OpenAI API key (for generation)
+2) OpenAI API key (for generation)
 - Add repo secret in this site repo:
   - Name: `OPENAI_API_KEY`
   - Value: your OpenAI API key
+
+3) Domain + server deployment
+- Use a domain you own (needed for Google verification)
+- Deploy via SSH from GitHub Actions (password-based secrets you already have):
+  - `HOST`, `USER`, `PASSWORD`, `REMOTE_PATH`
+- Set the base URL used in generated links:
+  - Secret: `SITE_BASE_URL` (example: `https://apps.yourdomain.com`)
 
 Cost control rule:
 - First build: generates pages when an app repo has `description.txt`
@@ -54,4 +57,3 @@ Cost control rule:
 ## Manual sync
 
 If needed: GitHub -> Actions -> Sync Privacy Policies -> Run workflow
-
